@@ -1,3 +1,7 @@
+
+forked from https://github.com/iriscouch/browser-request
+- - -
+
 # Browser Request: The easiest HTTP library you'll ever see
 
 Browser Request is a port of Mikeal Rogers's ubiquitous and excellent [request][req] package to the browser.
@@ -5,8 +9,6 @@ Browser Request is a port of Mikeal Rogers's ubiquitous and excellent [request][
 Jealous of Node.js? Pining for clever callbacks? Request is for you.
 
 Don't care about Node.js? Looking for less tedium and a no-nonsense API? Request is for you too.
-
-[![browser support](https://ci.testling.com/iriscouch/browser-request.png)](https://ci.testling.com/maxogden/browser-request)
 
 # Examples
 
@@ -17,6 +19,16 @@ request('/some/resource.txt', function(er, response, body) {
   if(er)
     throw er;
   console.log("I got: " + body);
+})
+```
+
+Fetch a resource as binary (body is a [ArrayBuffer](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) object):
+
+```javascript
+request({url:'/some/resource.bin', encoding: null}, function(er, response, body) {
+  if(er)
+    throw er;
+  console.log("I got " + body.byteLength + " bytes");
 })
 ```
 
@@ -104,4 +116,3 @@ Deploy `example-built.js` to your web site and use it from your page.
 ## License
 
 Browser Request is licensed under the Apache 2.0 license.
-

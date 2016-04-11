@@ -78,7 +78,7 @@ function request(options, callback) {
     else if(typeof options.body !== 'string')
       options.body = JSON.stringify(options.body)
   }
-  
+
   //BEGIN QS Hack
   var serialize = function(obj) {
     var str = [];
@@ -88,7 +88,7 @@ function request(options, callback) {
       }
     return str.join("&");
   }
-  
+
   if(options.qs){
     var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
     if(options.uri.indexOf('?') !== -1){ //no get params
@@ -98,7 +98,7 @@ function request(options, callback) {
     }
   }
   //END QS Hack
-  
+
   //BEGIN FORM Hack
   var multipart = function(obj) {
     //todo: support file type (useful?)
@@ -121,7 +121,7 @@ function request(options, callback) {
     result.type = 'multipart/form-data; boundary='+result.boundry;
     return result;
   }
-  
+
   if(options.form){
     if(typeof options.form == 'string') throw('form name unsupported');
     if(options.method === 'POST'){
@@ -168,6 +168,7 @@ function run_xhr(options) {
     , timed_out = false
     , is_cors = is_crossDomain(options.uri)
     , supports_cors = ('withCredentials' in xhr)
+    , binary_response = options.encoding === null
 
   req_seq += 1
   xhr.seq_id = req_seq
@@ -198,6 +199,21 @@ function run_xhr(options) {
   xhr.open(options.method, options.uri, true) // asynchronous
   if(is_cors)
     xhr.withCredentials = !! options.withCredentials
+  if (binary_response) {
+    // inspired by https://github.com/jDataView/jBinary/blob/0f6b2e069cd97d67bc5e10509eacfd59f0a88cc7/src/io/load.js
+    // new browsers (XMLHttpRequest2-compliant)
+		if ('responseType' in xhr) {
+			xhr.responseType = 'arraybuffer'
+		}
+		// old browsers (XMLHttpRequest-compliant)
+		else if ('overrideMimeType' in xhr) {
+			xhr.overrideMimeType('text/plain; charset=x-user-defined')
+		}
+		// IE9 (Microsoft.XMLHTTP-compliant)
+		else {
+			xhr.setRequestHeader('Accept-Charset', 'x-user-defined')
+		}
+  }
   xhr.send(options.body)
   return xhr
 
@@ -267,8 +283,12 @@ function run_xhr(options) {
 
     did.end = true
     request.log.debug('Request done', {'id':xhr.id})
-
-    xhr.body = xhr.responseText
+    // emulating response field for IE9
+    // inspired by https://github.com/jDataView/jBinary/blob/0f6b2e069cd97d67bc5e10509eacfd59f0a88cc7/src/io/load.js
+		if (binary_response && !('response' in xhr)) {
+			xhr.response = new VBArray(xhr.responseBody).toArray()
+		}
+    xhr.body = binary_response ? xhr.response : xhr.responseText
     if(options.json) {
       try        { xhr.body = JSON.parse(xhr.responseText) }
       catch (er) { return options.callback(er, xhr)        }

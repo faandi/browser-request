@@ -18,3 +18,12 @@ test('json true', function (t) {
     t.end()
   })
 })
+
+test('binary data', function (t) {
+  var url = 'https://www.googleapis.com/plus/v1/activities'
+  request({url: url, encoding: null}, function(err, resp, body) {
+    t.ok(body instanceof(ArrayBuffer), 'Body is an array buffer')
+    t.ok(body.byteLength > 0, 'Body byteLength should be > 0')
+    t.end()
+  })
+})
