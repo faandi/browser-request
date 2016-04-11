@@ -12,10 +12,10 @@
     "browser",
     "browserify"
   ],
-  "homepage": "http://github.com/iriscouch/browser-request",
+  "homepage": "http://github.com/faandi/browser-request",
   "repository": {
     "type": "git",
-    "url": "git://github.com/iriscouch/browser-request"
+    "url": "git://github.com/faandi/browser-request"
   },
   "scripts": {
     "test": "beefy test.js"
