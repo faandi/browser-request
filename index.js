@@ -197,6 +197,9 @@ function run_xhr(options) {
 
   xhr.onreadystatechange = on_state_change
   xhr.open(options.method, options.uri, true) // asynchronous
+  // set headers
+  for (var key in options.headers)
+    xhr.setRequestHeader(key, options.headers[key])
   if(is_cors)
     xhr.withCredentials = !! options.withCredentials
   if (binary_response) {
@@ -225,8 +228,6 @@ function run_xhr(options) {
 
     if(xhr.readyState === XHR.OPENED) {
       request.log.debug('Request started', {'id':xhr.id})
-      for (var key in options.headers)
-        xhr.setRequestHeader(key, options.headers[key])
     }
 
     else if(xhr.readyState === XHR.HEADERS_RECEIVED)
