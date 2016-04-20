@@ -36,8 +36,13 @@ function request(options, callback) {
 
   if(typeof options === 'string')
     options = {'uri':options};
-  else
-    options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
+  else {
+    // don't copy body, cause it could contain binary data as arraybuffer
+    var body = options.body;
+    // Use a duplicate for mutating.
+    options = JSON.parse(JSON.stringify(options));
+    options.body = body;
+  }
 
   options.onResponse = options_onResponse // And put it back.
 
